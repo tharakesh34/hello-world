@@ -1,0 +1,105 @@
+<html>
+<head>public api</head></br></br>
+<body align="center">
+	<label>from</label>
+	<input type="text" id="f">
+	</br></br>
+	<label >to</label>
+	<input type="text" id="t">
+	</br></br>
+	<label >date</label>
+	<input type="date" id="d"></br></br>
+	<button id="bb" onclick="convert()">submit</button></body></html></br></br>
+	<select id="drop" onchange="ontrainselection()">
+		<option option value="" disabled selected>select a train</option>
+	<table id="tt">
+<thead>
+<tr>
+<td>TRAIN NO</td>
+<td>TRAIN NAME</td>
+<td> FROM</td>
+<td>TO</td>
+<td>date</td>
+<td>durtion</td>
+</tr>
+</thead>
+<tbody id="tb">
+	
+</tbody>
+</table>
+<script>
+	function convert(){
+		console.log("hii");
+		var res;
+		var from=document.getElementById("f").value;
+		var to=document.getElementById("t").value;
+		var date=document.getElementById("d").value;
+		var jas= new XMLHttpRequest();
+		var url=' https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations?fromStationCode='+encodeURIComponent(from)+'&toStationCode='+encodeURIComponent(to)+'&dateOfJourney='+encodeURIComponent(date);
+		console.log(url);
+
+		jas.open('GET',url,true);
+		jas.setRequestHeader("X-RapidAPI-Key","fd665426a6mshb93e0c5e136a314p1bbe3ajsnae6402223222");
+		jas.setRequestHeader("X-RapidAPI-Host","irctc1.p.rapidapi.com");
+		jas.onreadystatechange=function(){
+			if(jas.readyState===4 && jas.status===200){
+				console.log("inside callback")
+			res=JSON.parse(jas.responseText);
+			console.log(res);
+				updatedrop(res);
+
+			console.log("hii");
+			}
+			else{
+
+				console.log("error");
+			}
+
+		};	
+		jas.send();
+}	
+	function crtab(data){
+		var bb=document.getElementById("tb");
+		bb.innerHTML='';
+		var dat=data.data;
+		console.log(dat);
+		dat.forEach(function (user){
+			var r=bb.insertRow();
+			var c1=r.insertCell();
+			var c2=r.insertCell();
+			var c3=r.insertCell();
+			var c4=r.insertCell();
+			var c5=r.insertCell();
+			var c6=r.insertCell();
+			c1.textContent=user.train_number;
+			c2.textContent=user.train_name;
+			c3.textContent=user.from_station_name;
+			c4.textContent=user.to_station_name;
+			c5.textContent=user.train_date;
+			c6.textContent=user.duration;	
+	
+
+		}
+	)};
+
+ 	 function updatedrop(data) {
+ 	 	var dat=data.data;
+ 	 	console.log("HII"+dat);
+    var dropdown = document.getElementById("drop");
+    dropdown.innerHTML = '<option value="" disabled selected>Select a train</option>'; 
+    dat.forEach(function (train) {
+      var option = document.createElement("option");
+      option.value = train.train_number;
+      option.textContent = train.train_name + " (" + train.train_number + ")";
+      dropdown.appendChild(option);
+    });
+  }
+  function ontrainselection() {
+    var selectedTrain = document.getElementById("drop").value;
+    console.log("Selected Train:", selectedTrain);
+  }
+
+
+</script>
+</body>
+</html>
